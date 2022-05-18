@@ -11,7 +11,7 @@ const { constants } = require("../helpers/constants");
 
 exports.GetCandidates=(req,res)=>{
     try {
-        UserModel.find().select(["_id", "firstName", "lastName", "username","email","phone","birthdate","diploma","adress"]).then(user => {
+        UserModel.find({role:"candidate"}).select(["_id", "firstName", "lastName", "username","email","phone","birthdate","diploma","adress"]).then(user => {
             return apiResponse.successResponseWithData(res,"candidates List", user);
     
         })
