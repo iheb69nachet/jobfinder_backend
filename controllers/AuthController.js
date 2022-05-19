@@ -99,7 +99,36 @@ exports.register = [
 			return apiResponse.ErrorResponse(res, err);
 		}
 	}];
+exports.registerCompany=async(req,res)=>{
 
+	UserModel.findOne({email : req.body.email}).then((user) => {
+		if (user) {
+			return apiResponse.ErrorResponse(res,"email already used.")
+		}
+		bcrypt.hash(req.body.password,10,function(err, hash) {
+			req.body.password=hash
+			req.body.role="company"
+			var user = new UserModel(
+				req.body
+			);
+		
+			try {
+				user.save(function (err) {
+					if (err) { 
+						console.log(err.message);
+						return apiResponse.ErrorResponse(res, err); }
+					
+					return apiResponse.successResponseWithData(res,"Registration Success.", {});
+				});
+			} catch (error) {
+				console.log(error.message);
+				return apiResponse.ErrorResponse(res,err);
+			}
+
+		
+	});
+
+})}
 /**
  * User login.
  *
