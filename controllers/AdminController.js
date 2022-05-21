@@ -22,3 +22,16 @@ exports.GetCandidates=(req,res)=>{
   
 
 }
+exports.GetCompanies=(req,res)=>{
+    try {
+        UserModel.find({role:"company"}).select(["_id", "CompanyName", "CompanyAddress", "sector","description","creationDate","type","diploma","phone",'address',"email"]).then(user => {
+            return apiResponse.successResponseWithData(res,"company List", user);
+    
+        })
+    } catch (error) {
+        return apiResponse.ErrorResponse(res,error.message);
+        
+    }
+  
+
+}
