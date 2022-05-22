@@ -8,6 +8,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const mailer = require("../helpers/mailer");
 const { constants } = require("../helpers/constants");
+const JobModel = require("../models/JobModel");
 
 exports.GetCandidates=(req,res)=>{
     try {
@@ -24,7 +25,7 @@ exports.GetCandidates=(req,res)=>{
 }
 exports.GetCompanies=(req,res)=>{
     try {
-        UserModel.find({role:"company"}).select(["_id", "CompanyName", "CompanyAddress", "sector","description","creationDate","type","diploma","phone",'address',"email"]).then(user => {
+        UserModel.find({role:"company"}).select(["_id", "CompanyName", "CompanyAddress", "sector","description","creationDate","type","phone",'address',"email"]).then(user => {
             return apiResponse.successResponseWithData(res,"company List", user);
     
         })
@@ -32,6 +33,17 @@ exports.GetCompanies=(req,res)=>{
         return apiResponse.ErrorResponse(res,error.message);
         
     }
+   
   
 
+}
+exports.GetJobs=(req,res)=>{
+    try{
+        JobModel.find().select(["_id","CompanyID","title","description","placesAvailable","qualifications","technologiesReq","diplomaReq","jobtypes","status"]).then(job=>{
+            return apiResponse.successResponseWithData(res,"job offers list",job)
+
+        })
+    }catch(error){
+        return apiResponse.ErrorResponse(res,error.message)
+    }
 }
