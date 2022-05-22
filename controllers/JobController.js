@@ -78,9 +78,21 @@ exports.ApproveJob=(req,res)=>{
 
         }
 }
+exports.DisapproveJob=(req,res)=>{
+    try {
+        JobModel.findOneAndUpdate({_id:new ObjectId(req.query.id)},{status:"Disapproved"},function(err, doc) {
+            if (err) return apiResponse.ErrorResponse(res,error.message);
+            return apiResponse.successResponse(res,"Jobs Disapproved");
+            
+        });}
+        catch(error){
+        return apiResponse.ErrorResponse(res,error.message);
+
+        }
+}
 exports.Approved=(req,res)=>{
     try {
-        JobModel.find({status:"Approved"}).populate('CompanyID').then(jobs=>{
+        JobModel.find({status:"Approved"}).populate('CompanyID',["_id", "CompanyName", "CompanyAddress", "sector","description","creationDate","type","diploma","phone",'address',"email"]).then(jobs=>{
             return apiResponse.successResponseWithData(res,"jobs", jobs);
 
         })

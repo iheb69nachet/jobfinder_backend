@@ -7,7 +7,8 @@ var router = express.Router();
 
 router.post("/add",CheckCompany ,JobsController.AddNew);
 router.get("/list",CheckCompany ,JobsController.GetJobs);
-router.post("/approve",CheckAdmin ,JobsController.ApproveJob);
+router.get("/approve",CheckAdmin ,JobsController.ApproveJob);
+router.get("/dispprove",CheckAdmin ,JobsController.DisapproveJob);
 
 router.get("/approved" ,JobsController.Approved);
 
