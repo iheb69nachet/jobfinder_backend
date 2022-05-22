@@ -36,7 +36,7 @@ exports.GetJobs=(req,res)=>{
     try {
         if(id!==''){
             try {
-                JobModel.findOne({_id:new ObjectId(id),CompanyID:req.user._id}).populate('CompanyID',["_id", "CompanyName", "CompanyAddress", "sector","description","creationDate","type","diploma","phone",'address',"email"]).then(job=>{
+                JobModel.findOne({_id:new ObjectId(id),CompanyID:req.user._id}).populate('CompanyID',["_id", "CompanyName", "CompanyAddress", "sector","description","creationDate","type","diploma","phone",'address',"email","localisation", "created_at"]).then(job=>{
                     if(!job){
                     return apiResponse.successResponseWithData(res,"no job found", job);
 
@@ -50,7 +50,7 @@ exports.GetJobs=(req,res)=>{
           
         }else{
             try {
-                JobModel.find({CompanyID:req.user._id}).populate('CompanyID',["_id", "CompanyName", "CompanyAddress", "sector","description","creationDate","type","diploma","phone",'address',"email"]).then(job=>{
+                JobModel.find({CompanyID:req.user._id}).populate('CompanyID',["_id", "CompanyName", "CompanyAddress", "sector","description","creationDate","type","diploma","phone",'address',"email","localisation","created_at"]).then(job=>{
                 
                     return apiResponse.successResponseWithData(res,"Jobs retrieved Successfully.", job);
                 })
@@ -92,7 +92,7 @@ exports.DisapproveJob=(req,res)=>{
 }
 exports.Approved=(req,res)=>{
     try {
-        JobModel.find({status:"Approved"}).populate('CompanyID',["_id", "CompanyName", "CompanyAddress", "sector","description","creationDate","type","diploma","phone",'address',"email"]).then(jobs=>{
+        JobModel.find({status:"Approved"}).populate('CompanyID',["_id", "CompanyName", "CompanyAddress", "sector","description","creationDate","type","diploma","phone",'address',"email","localisation","created_at"]).then(jobs=>{
             return apiResponse.successResponseWithData(res,"jobs", jobs);
 
         })
@@ -101,4 +101,36 @@ exports.Approved=(req,res)=>{
         return apiResponse.ErrorResponse(res,error.message);
 
         }
+}
+exports.getJobById=(req,res)=>{
+    try{
+        JobModel.findById(req.params.id).populate('CompanyID',["_id", "CompanyName", "CompanyAddress", "sector","description","creationDate","type","diploma","phone",'address',"email"]).then(jobs=>{
+            return apiResponse.successResponseWithData(res,"jobs",jobs)
+        })
+
+    }catch(error){
+        return apiResponse.ErrorResponse(res,error.message)
+    }
+}
+exports.update=(req,res)=>{
+    try{
+        JobModel.findByIdAndUpdate(req.params.id).then(jobs=>{
+            return apiResponse.successResponseWithData(res,"jobs",jobs)
+        })
+
+    }catch(error){
+        return apiResponse.ErrorResponse(res,error.message)
+    }
+
+}
+exports.delete=(req,res)=>{
+    try{
+        JobModel.findByIdAndDelete(req.params.id).then(jobs=>{
+            return apiResponse.successResponseWithData(res,"jobs",jobs)
+        })
+
+    }catch(error){
+        return apiResponse.ErrorResponse(res,error.message)
+    }
+     
 }
