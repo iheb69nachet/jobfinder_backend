@@ -9,6 +9,9 @@ const jwt = require("jsonwebtoken");
 const mailer = require("../helpers/mailer");
 const { constants } = require("../helpers/constants");
 const JobModel = require("../models/JobModel");
+const formData = require('express-form-data');
+const ApplyModel = require("../models/ApplyModel");
+
 var ObjectId = require('mongodb').ObjectID;
 exports.AddNew=(req,res)=>{
     console.log(req.body);
@@ -104,7 +107,7 @@ exports.Approved=(req,res)=>{
 }
 exports.getJobById=(req,res)=>{
     try{
-        JobModel.findById(req.params.id).populate('CompanyID',["_id", "CompanyName", "CompanyAddress", "sector","description","creationDate","type","diploma","phone",'address',"email"]).then(jobs=>{
+        JobModel.findById(req.query.id).populate('CompanyID',["_id", "CompanyName", "CompanyAddress", "sector","description","creationDate","type","website","phone",'address',"email"]).then(jobs=>{
             return apiResponse.successResponseWithData(res,"jobs",jobs)
         })
 
@@ -133,4 +136,32 @@ exports.delete=(req,res)=>{
         return apiResponse.ErrorResponse(res,error.message)
     }
      
+}
+exports.Apply=(req,res)=>{
+    try {
+        const apply=new ApplyModel({
+            user_id:req.user._id,
+            file_path:req.file.filename,
+            job_id:req.body.job_id,
+            motivation:req.body.motivation
+        })
+        apply.save(function (err) {
+            if (err) { 
+                console.log(err.message)
+                return apiResponse.ErrorResponse(res, err); }
+            
+            return apiResponse.successResponseWithData(res,"Applied Successfully.");
+        });
+    } catch (error) {
+        
+    }
+    console.log(req.user)    
+    console.log(req.body);
+    console.log(req.file.filename);
+}
+exports.GetApplies=(req,res)=>{
+    ApplyModel.find({job_id:req.query.id}).then(job=>{
+        return apiResponse.successResponseWithData(res,"jobs",job)
+
+    })
 }

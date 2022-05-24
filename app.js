@@ -7,6 +7,7 @@ var indexRouter = require("./routes/index");
 var apiRouter = require("./routes/api");
 var apiResponse = require("./helpers/apiResponse");
 var cors = require("cors");
+var path = require('path');
 
 // DB connection
 var MONGODB_URL = process.env.MONGODB_URL;
@@ -26,6 +27,7 @@ mongoose.connect(MONGODB_URL, { useNewUrlParser: true, useUnifiedTopology: true 
 var db = mongoose.connection;
 
 var app = express();
+app.use(express.static(path.join(__dirname, 'cvs'))); 
 
 //don't show the log when it is test
 if(process.env.NODE_ENV !== "test") {
