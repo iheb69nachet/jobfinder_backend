@@ -22,7 +22,13 @@ router.get("/approve",CheckAdmin ,JobsController.ApproveJob);
 router.get("/dispprove",CheckAdmin ,JobsController.DisapproveJob);
 router.get("/detail",JobsController.getJobById);
 router.put("/updatejob/:id",CheckCompany,JobsController.update);
+router.put("/updatejobAd/:id",CheckAdmin,JobsController.update);
 router.delete("/deletejob/:id",CheckCompany,JobsController.delete);
+router.delete("/deletejobAd/:id",CheckAdmin,JobsController.delete);
+router.get("/approveApp",CheckCompany,JobsController.ApproveApp)
+router.get("/dispproveApp",CheckCompany ,JobsController.DisapproveApp);
+router.get("/applications",CheckAdmin,CheckCompany,JobsController.GetApps)
+
 
 router.get("/approved" ,JobsController.Approved);
 router.post("/apply" , [multer({storage: storage}).single('cv'),authenticateJWT],JobsController.Apply);

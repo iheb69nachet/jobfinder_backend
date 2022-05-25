@@ -11,11 +11,13 @@ const { constants } = require("../helpers/constants");
 const JobModel = require("../models/JobModel");
 const formData = require('express-form-data');
 const ApplyModel = require("../models/ApplyModel");
+const { application } = require("express");
 
 var ObjectId = require('mongodb').ObjectID;
 exports.AddNew=(req,res)=>{
     console.log(req.body);
     req.body.CompanyID=req.user._id
+    req.body.category=req.category._id
     try {
         var job = new JobModel(
             req.body
@@ -164,4 +166,63 @@ exports.GetApplies=(req,res)=>{
         return apiResponse.successResponseWithData(res,"jobs",job)
 
     })
+}
+exports.ApproveApp=(req,res)=>{
+    try {
+        ApplyModel.findOneAndUpdate({_id:new ObjectId(req.query.id)},{status:"Approved"},function(err, doc) {
+            if (err) return apiResponse.ErrorResponse(res,error.message);
+            return apiResponse.successResponse(res,"Application Approved");
+            
+        });}
+        catch(error){
+        return apiResponse.ErrorResponse(res,error.message);
+
+        }
+}
+exports.DisapproveApp=(req,res)=>{
+    try {
+      ApplyModel.findOneAndUpdate({_id:new ObjectId(req.query.id)},{status:"Disapproved"},function(err, doc) {
+            if (err) return apiResponse.ErrorResponse(res,error.message);
+            return apiResponse.successResponse(res,"Application Disapproved");
+            
+        });}
+        catch(error){
+        return apiResponse.ErrorResponse(res,error.message);
+
+        }
+}
+exports.GetApps=(req,res)=>{
+    let id=req.query.id||""
+    try {
+        if(id!==''){
+            try {
+                ApplyModel.findOne({_id:new ObjectId(id),job_id:req.user._id}).populate('job_id','user_id',["_id", "motivation", "file_path"]).then(application=>{
+                    if(!application){
+                    return apiResponse.successResponseWithData(res,"no application found", application);
+
+                    }
+                    return apiResponse.successResponseWithData(res,"Application retrieved Successfully.", application);
+                })
+            } catch (error) {
+        return apiResponse.ErrorResponse(res,error.message);
+                
+            }
+          
+        }else{
+            try {
+                ApplyModel.find({user_id:req.user._id}).populate('job_id','user_id'["_id", "motivation", "file_path"]).then(job=>{
+                
+                    return apiResponse.successResponseWithData(res,"applications retrieved Successfully.", application);
+                })
+            } catch (error) {
+        return apiResponse.ErrorResponse(res,error.message);
+                
+            }
+            
+        }
+    } catch (error) {
+        return apiResponse.ErrorResponse(res,error.message);
+        
+    }
+    
 }

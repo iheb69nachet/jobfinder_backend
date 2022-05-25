@@ -9,6 +9,7 @@ const jwt = require("jsonwebtoken");
 const mailer = require("../helpers/mailer");
 const { constants } = require("../helpers/constants");
 const JobModel = require("../models/JobModel");
+const CategoryModel=require('../models/categoryModel')
 
 exports.GetCandidates=(req,res)=>{
     try {
@@ -42,6 +43,60 @@ exports.GetJobs=(req,res)=>{
         JobModel.find().select(["_id","CompanyID","title","description","placesAvailable","qualifications","technologiesReq","diplomaReq","jobtypes","status"]).then(job=>{
             return apiResponse.successResponseWithData(res,"job offers list",job)
 
+        })
+    }catch(error){
+        return apiResponse.ErrorResponse(res,error.message)
+    }
+}
+exports.addCat=(req,res)=>{
+    try {
+        var cat = new CategoryModel(
+            req.body
+        );
+        cat.save(function (err) {
+            if (err) { 
+                console.log(err.message);
+                return apiResponse.ErrorResponse(res, err); }
+            
+            return apiResponse.successResponseWithData(res,"Category Added Successfully.", cat);
+        });
+    } catch (error) {
+        return apiResponse.ErrorResponse(res,error.message);
+        
+    }
+}
+exports.getAllCat=(req,res)=>{
+    try{
+        CategoryModel.find().then(cat=>{
+            return apiResponse.successResponseWithData(res,"Categories retrieved Successfully",cat)
+
+        })
+    }catch(error){
+        return apiResponse.ErrorResponse(res,error.message)
+    }
+}
+exports.deleteCat=(req,res)=>{
+    try{
+        CategoryModel.findByIdAndRemove(req.params.id).then(cat=>{
+            return apiResponse.successResponseWithData(res,"Category deleted",cat)
+        })
+    }catch(error){
+        return apiResponse.ErrorResponse(res,error.message)
+    }
+}
+exports.updateCat=(req,res)=>{
+    try{
+        CategoryModel.findByIdAndUpdate(req.params.id).then(cat=>{
+            return apiResponse.successResponseWithData(res,"Category Updated",cat)
+        })
+    }catch(error){
+        return apiResponse.ErrorResponse(res,message.error)
+    }
+}
+exports.getCatById=(req,res)=>{
+    try{
+        CategoryModel.findById(req.params.id).then(cat=>{
+            return apiResponse.successResponseWithData(res,"Category",cat)
         })
     }catch(error){
         return apiResponse.ErrorResponse(res,error.message)

@@ -7,6 +7,7 @@ var UserSchema = new mongoose.Schema({
 	email: {type: String, required: true},
 	password: {type: String, required: true},
 	birthdate: {type: String, required: false},
+
 	phone: {type: Number, required: true},
 	adress: {type: String, required: false},
 	diploma: {type: String, required: false},
@@ -16,6 +17,7 @@ var UserSchema = new mongoose.Schema({
 	CompanyAddress: {type: String, required: false},
 	sector: {type: String, required: false},
 	description: {type: String, required: false},
+	website:{type:String},
 	creationDate: {type: String, required: false},
 	type: {type:String,required:false},
 }, {timestamps: true});

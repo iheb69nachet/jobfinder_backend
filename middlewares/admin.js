@@ -48,4 +48,27 @@ const CheckCompany=(req,res,next)=>{
 
     }
 }
-module.exports={CheckAdmin,CheckCompany}
+const CheckCandidat=(req,res,next)=>{
+    const authHeader = req.headers.authorization;
+
+    if (authHeader) {
+        const token = authHeader.split(' ')[1];
+
+        jwt.verify(token, secret, (err, user) => {
+            if (err) {
+                return apiResponse.ErrorResponse(res, err.message);
+            }
+            if(user.role=="candidate"){
+                req.user = user;
+                next();
+            }else{
+                return apiResponse.unauthorizedResponse(res, "not allowed");
+
+            }
+        });
+    } else {
+        return apiResponse.unauthorizedResponse(res, "bad jwt");
+
+    }
+}
+module.exports={CheckAdmin,CheckCompany,CheckCandidat}

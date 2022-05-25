@@ -13,7 +13,8 @@ var JobSchema = new mongoose.Schema({
 	localisation:{type:String,required:true},
 	status:{type:String,required:true,default:'Pending'},
 	CompanyID: {type:Schema.Types.ObjectId, ref: 'User',required:true},
-    created_at:{type:Date, default:Date.now()}
+    created_at:{type:Date, default:Date.now()},
+	category:{type:Schema.Types.ObjectId,ref:'Category'}
 }, {timestamps: true
 }
  );
