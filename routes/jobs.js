@@ -33,6 +33,12 @@ router.get("/applications",CheckAdmin,CheckCompany,JobsController.GetApps)
 router.get("/approved" ,JobsController.Approved);
 router.post("/apply" , [multer({storage: storage}).single('cv'),authenticateJWT],JobsController.Apply);
 router.get("/applies" ,CheckCompany,JobsController.GetApplies);
+router.post("/comment" ,authenticateJWT,JobsController.comment);
+router.get("/comments",authenticateJWT,JobsController.GetComments)
+router.post("/comment/actions" ,authenticateJWT,JobsController.Actioncomment);
+router.get("/comment/delete" ,authenticateJWT,JobsController.DeleteComment);
+
+
 
 
 

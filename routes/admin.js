@@ -10,7 +10,7 @@ router.get("/offers",CheckAdmin, AdminController.GetJobs)
 router.post("/category",CheckAdmin,AdminController.addCat)
 router.get("/getallCat",CheckAdmin,AdminController.getAllCat)
 router.delete("/deleteCat/:id",CheckAdmin,AdminController.deleteCat)
-router.put("/updateCat/:id",CheckAdmin,AdminController.updateCat);
+router.post("/updateCat",CheckAdmin,AdminController.updateCat);
 router.get("/catById/:id",CheckAdmin,AdminController.getCatById)
 
 

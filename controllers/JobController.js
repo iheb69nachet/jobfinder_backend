@@ -11,6 +11,8 @@ const { constants } = require("../helpers/constants");
 const JobModel = require("../models/JobModel");
 const formData = require('express-form-data');
 const ApplyModel = require("../models/ApplyModel");
+const CommentsModel = require("../models/CommentsModel");
+
 const { application } = require("express");
 
 var ObjectId = require('mongodb').ObjectID;
@@ -109,8 +111,18 @@ exports.Approved=(req,res)=>{
 }
 exports.getJobById=(req,res)=>{
     try{
-        JobModel.findById(req.query.id).populate('CompanyID',["_id", "CompanyName", "CompanyAddress", "sector","description","creationDate","type","website","phone",'address',"email"]).then(jobs=>{
-            return apiResponse.successResponseWithData(res,"jobs",jobs)
+        JobModel.findById(req.query.id).populate('CompanyID',["_id", "CompanyName", "CompanyAddress", "sector","description","creationDate","type","website","phone",'address',"email"]).
+        then(async jobs=>{
+            var data=jobs
+            await CommentsModel.find({JobId:jobs._id,status:"Approved"}).populate('UserID').then(comments=>{
+                var data={
+                    job:jobs,
+                    comments:comments
+                }
+                return apiResponse.successResponseWithData(res,"jobs",data)
+
+            })
+        
         })
 
     }catch(error){
@@ -162,9 +174,35 @@ exports.Apply=(req,res)=>{
     console.log(req.file.filename);
 }
 exports.GetApplies=(req,res)=>{
-    ApplyModel.find({job_id:req.query.id}).then(job=>{
+    ApplyModel.find({job_id:req.query.id}).populate('user_id').then(job=>{
         return apiResponse.successResponseWithData(res,"jobs",job)
 
+    })
+}
+exports.comment=(req,res)=>{
+    let comment=new CommentsModel({
+        Content:req.body.comment,
+        UserID:req.user._id,
+        JobId:req.body.job_id,
+        status:req.user.role=="company"?"Approved":"Pending"
+
+    })
+    console.log(comment);
+    try {
+        comment.save().then(result=>{
+            return apiResponse.successResponseWithData(res,"Commented Successfully");
+        
+        })
+    } catch (error) {
+        return apiResponse.ErrorResponse(res,error.message);
+
+        
+    }
+    console.log(req.user)
+}
+exports.GetComments=(req,res)=>{
+    CommentsModel.find({JobId:req.query.id}).then(comments=>{
+        return apiResponse.successResponseWithData(res,'Comments',comments)
     })
 }
 exports.ApproveApp=(req,res)=>{
@@ -225,4 +263,47 @@ exports.GetApps=(req,res)=>{
         
     }
     
+}
+exports.Actioncomment=async (req,res)=>{
+
+    try {
+        CommentsModel.findOne({_id:req.body.id}, function(err, comment) {
+            if(!err) {
+                if(!comment) {
+                    
+                }
+                comment.status = req.body.status;
+                comment.save(function(err) {
+                    if(!err) {
+                        return apiResponse.successResponseWithData(res,`Comment is ${req.body.status} Successfully.`);
+
+                    }
+                    else {
+                        console.log(err.message);
+
+                    return apiResponse.ErrorResponse(res,err.message);
+
+                    }
+                });
+            }
+        });
+        
+    } catch (error) {
+        console.log(error.message);
+
+        return apiResponse.ErrorResponse(res,error.message);
+        
+    }
+
+}
+exports.DeleteComment=async(req,res)=>{
+    CommentsModel.findByIdAndRemove(req.query.id, function(err){
+        if(err){
+            return apiResponse.ErrorResponse(res,err.message);
+
+        } else {
+            return apiResponse.successResponseWithData(res,`Comment is deleted Successfully.`);
+
+        }
+     });
 }

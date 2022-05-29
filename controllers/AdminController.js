@@ -85,13 +85,39 @@ exports.deleteCat=(req,res)=>{
     }
 }
 exports.updateCat=(req,res)=>{
-    try{
-        CategoryModel.findByIdAndUpdate(req.params.id).then(cat=>{
-            return apiResponse.successResponseWithData(res,"Category Updated",cat)
-        })
-    }catch(error){
+    try {
+        CategoryModel.findOne({_id:req.body.id}, function(err, cat) {
+            console.log(cat);
+            if(!err) {
+                if(!cat) {
+                    
+                }
+                cat.name = req.body.cat;
+                cat.save(function(err) {
+                    if(!err) {
+                        return apiResponse.successResponseWithData(res,`Category is updated Successfully.`);
+    
+                    }
+                    else {
+                        console.log(err.message);
+    
+                    return apiResponse.ErrorResponse(res,err.message);
+    
+                    }
+                });
+            }
+        });
+    
+    } catch (error) {
         return apiResponse.ErrorResponse(res,message.error)
     }
+    // try{
+    //     CategoryModel.findByIdAndUpdate(req.params.id).then(cat=>{
+    //         return apiResponse.successResponseWithData(res,"Category Updated",cat)
+    //     })
+    // }catch(error){
+    //     return apiResponse.ErrorResponse(res,message.error)
+    // }
 }
 exports.getCatById=(req,res)=>{
     try{
