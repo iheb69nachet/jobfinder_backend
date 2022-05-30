@@ -165,6 +165,8 @@ exports.login = [
 											email: user.email,
 											role:user.role,
 											diploma:user.diploma,
+											adress:user.adress,
+											birthdate:user.birthdate,
 											phone:user.phone,
 										};
 										//Prepare JWT token for authentication
