@@ -13,7 +13,8 @@ const formData = require('express-form-data');
 const ApplyModel = require("../models/ApplyModel");
 const CommentsModel = require("../models/CommentsModel");
 
-const { application } = require("express");
+const { application, response } = require("express");
+const FavoritesModel = require("../models/FavoritesModel");
 
 var ObjectId = require('mongodb').ObjectID;
 exports.AddNew=(req,res)=>{
@@ -306,4 +307,32 @@ exports.DeleteComment=async(req,res)=>{
 
         }
      });
+}
+exports.favorites=async(req,res)=>{
+    console.log(req.user);
+    let data=new FavoritesModel({
+        "JobId":req.body.id,
+        "UserID":req.user._id
+    })
+    data.save()
+    return apiResponse.successResponseWithData(res,'favorites added to favorites')
+}
+exports.Getfavorites=async(req,res)=>{
+    FavoritesModel.find({"UserID":req.user._id}).then(favs=>{
+        let array=[];
+        favs.map(fav=>{
+            array.push(fav.JobId)
+        })
+        return apiResponse.successResponseWithData(res,"favorites",array);
+ 
+    })
+}
+exports.Deletefavorites=async(req,res)=>{
+    try{
+        FavoritesModel.findOneAndRemove({JobId:req.body.id,UserID:req.user._id}).then(cat=>{
+            return apiResponse.successResponseWithData(res,"favorites deleted",cat)
+        })
+    }catch(error){
+        return apiResponse.ErrorResponse(res,error.message)
+    }
 }

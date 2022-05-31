@@ -37,6 +37,11 @@ router.post("/comment" ,authenticateJWT,JobsController.comment);
 router.get("/comments",authenticateJWT,JobsController.GetComments)
 router.post("/comment/actions" ,authenticateJWT,JobsController.Actioncomment);
 router.get("/comment/delete" ,authenticateJWT,JobsController.DeleteComment);
+router.post("/favorites" ,authenticateJWT,JobsController.favorites);
+router.post("/favorites/delete" ,authenticateJWT,JobsController.Deletefavorites);
+
+router.get("/favorites" ,authenticateJWT,JobsController.Getfavorites);
+
 
 
 
